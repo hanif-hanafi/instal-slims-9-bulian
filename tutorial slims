@@ -1,0 +1,40 @@
+cara instalasi slims 9 bulian (perpustakaan digital)
+sudo apt update 
+  sudo apt install apache2 mariadb-server php libapache2-mod-php php-mysql php-gd php-xml php-mbstring php-curl unzip -y
+  sudo mysql -u root -p
+buat database sebagai berikut
+CREATE DATABASE slims;
+CREATE USER 'slimsuser'@'localhost' IDENTIFIED BY 'passwordmu';
+GRANT ALL PRIVILEGES ON slims.* TO 'slimsuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+  cd /var/www/html
+  sudo wget https://github.com/slims/slims9_bulian/archive/refs/heads/master.zip
+  sudo unzip master.zip
+  sudo mv slims9_bulian-master slims
+  cd slims/
+  ls -l
+  sudo chown -R www-data:www-data .
+  sudo chmod -R 755 .
+  sudo chmod -R 777 files config
+  sudo vim /etc/apache2/sites-available/slims.conf
+di dalam file /etc/apache2/sites-available/slims.conf isi dengan konfigurasi berikut
+<VirtualHost *:80>
+    ServerAdmin admin@localhost
+    DocumentRoot /var/www/html/slims
+    ServerName slims.local
+
+    <Directory /var/www/html/slims/>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/slims_error.log
+    CustomLog ${APACHE_LOG_DIR}/slims_access.log combined
+</VirtualHost>
+
+  sudo a2ensite slims
+  sudo a2enmod rewrite
+  sudo systemctl restart apache2
